@@ -5,6 +5,7 @@ set -e
 username=lemmy
 password=password
 dbname=lemmy
+host=localhost
 port=5432
 
 yes_no_prompt_invalid() {
@@ -13,6 +14,7 @@ yes_no_prompt_invalid() {
 
 print_config() {
   echo "  database name: $dbname"
+  echo "  host: $host"
   echo "  username: $username"
   echo "  password: $password"
   echo "  port: $port"
@@ -42,15 +44,16 @@ ask_for_db_config() {
     while [ "$config_ok_final" == 0 ]
     do
       read -p "Database name:  " dbname
+      read -p "Host: " host
       read -p "Username:  " username
-      read -p "Password: password"
+      read -p "Password: " password
       read -p "Port:  " port
       #echo
-      
+
       #echo "The database configuration is:"
       #print_config
       #echo
-      
+
       config_ok_valid=0
       while [ "$config_ok_valid" == 0 ]
       do
@@ -70,7 +73,7 @@ ask_for_db_config
 
 psql -c "CREATE USER $username WITH PASSWORD '$password' SUPERUSER;" -U postgres
 psql -c "CREATE DATABASE $dbname WITH OWNER $username;" -U postgres
-export LEMMY_DATABASE_URL=postgres://$username:$password@localhost:$port/$dbname
+export LEMMY_DATABASE_URL=postgres://$username:$password@$host:$port/$dbname
 
 echo "The database URL is $LEMMY_DATABASE_URL"
 
